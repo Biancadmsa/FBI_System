@@ -41,15 +41,38 @@ app.get("/iniciarSesion", (req, res) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Agente Autorizado</title>
-        <link rel="stylesheet" href="style.css">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('img.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+             background-repeat: no-repeat;
+          }
+          .content {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          }
+        </style>
       </head>
       <body>
-        <h2>Bienvenido, ${agente.email}</h2>
-        <p id="expirationInfo">Token expira en: <span id="countdown">${
-          expiresAt - Math.floor(Date.now() / 1000)
-        }</span> segundos</p>
-        <a href="#" onclick="accederRutaRestringida('${token}')">Ir a la ruta restringida</a>
-        <p id="serverResponse"></p>
+        <div class="content">
+          <h2>Bienvenido, ${agente.email}</h2>
+          <p id="expirationInfo">Token expira en: <span id="countdown">${
+            expiresAt - Math.floor(Date.now() / 1000)
+          }</span> segundos</p>
+          <a href="#" onclick="accederRutaRestringida('${token}')">Ir a la ruta restringida</a>
+          <p id="serverResponse"></p>
+        </div>
         <script>
           sessionStorage.setItem('token', '${token}');
           let countdownInterval; // Variable para almacenar el intervalo del contador

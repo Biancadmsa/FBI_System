@@ -27,6 +27,21 @@ Sistema online que gestione misiones secretas...
 2. password: Contraseña del usuario.
 ```
 
+## Accesos permitidos:
+```
+ {
+    email: 'who@fbi.com',
+    password: 'me',
+  },
+  {
+    email: 'where@fbi.com',
+    password: 'there',
+  },
+  {
+    email: 'how@fbi.com',
+    password: 'exactly',
+  },
+```
 
 ## Respuesta Exitosa:
 ```
