@@ -8,10 +8,9 @@
 </head>
 <body>
   <div class="content">
-    <h2>Bienvenido, {{ email }}</h2>
+    <h2 id="tituloh2">Bienvenido: {{ email }}😊</h2>
     <p id="expirationInfo">Token expira en: <span id="countdown">{{ expiresInSec }}</span> segundos</p>
-    <a href="#" onclick="accederRutaRestringida('{{ token }}')">Ir a la ruta restringida</a>
-    <p id="serverResponse"></p>
+    <button class="btn-large" onclick="accederRutaRestringida('{{ token }}')">Ir a la ruta restringida</button>
   </div>
   <script>
     sessionStorage.setItem('token', '{{ token }}');

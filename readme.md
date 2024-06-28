@@ -9,7 +9,7 @@ Sistema online que gestione misiones secretas...
 2. Instala las dependencias con npm:
 
    npm install
-   ```
+```
 
 ## Endpoints
 

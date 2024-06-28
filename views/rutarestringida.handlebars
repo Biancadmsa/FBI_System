@@ -1,15 +1,21 @@
-<!-- views/bienvenida.handlebars -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
       <link rel="stylesheet" href="/style.css">
     <title>Ruta Restringida</title>
 </head>
 <body>
-<div class="restringida">
+<div class="restringida bg-white">
   <h1>Bienvenido: {{ email }} 😊</h1>
+  <p>Estás en la ruta restringida del FBI</p>
 <button class="btn-large"><a href="http://localhost:3000/" style="text-decoration:none; color: white;">Volver al inicio</a></button>
 </div>
 
