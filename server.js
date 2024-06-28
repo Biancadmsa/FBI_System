@@ -2,117 +2,53 @@ const express = require("express");
 const path = require("path");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const { create } = require("express-handlebars");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Datos de ejemplo de agentes
 const agentes = require("./data/agentes.js");
 
+const hbs = create({
+  extname: ".handlebars",
+  defaultLayout: false,
+});
+
+app.engine("handlebars", hbs.engine);
+app.set("view engine", "handlebars");
+app.set("views", path.join(__dirname, "views"));
+
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'views')));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
-
-app.get("/iniciarSesion", (req, res) => {
+app.get('/iniciarSesion', (req, res) => {
   const { email, password } = req.query;
-
-  // Buscar el agente en la lista de agentes
-  const agente = agentes.results.find(
-    (agente) => agente.email === email && agente.password === password
-  );
+  const agente = agentes.results.find((agente) => agente.email === email && agente.password === password);
 
   if (agente) {
-    // Generar el token JWT con expiración de 1 minuto
     const token = jwt.sign(
       { email: agente.email },
       process.env.SECRET,
-      { expiresIn: "1m" } // Token expirará en 1 minuto
+      { expiresIn: '60s' }
     );
 
-    // Calcula el tiempo de expiración en segundos
-    const expiresAt = Math.floor(Date.now() / 1000) + 60; // 60 segundos
+    const expiresAt = Math.round(Date.now() / 1000) + 60;
+    const expiresInSec = expiresAt - Math.floor(Date.now() / 1000); // Calcular expiresInSec aquí
 
-    // HTML de respuesta al autenticar el agente
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Agente Autorizado</title>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: url('img.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-             background-repeat: no-repeat;
-          }
-          .content {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-          }
-        </style>
-      </head>
-      <body>
-        <div class="content">
-          <h2>Bienvenido, ${agente.email}</h2>
-          <p id="expirationInfo">Token expira en: <span id="countdown">${
-            expiresAt - Math.floor(Date.now() / 1000)
-          }</span> segundos</p>
-          <a href="#" onclick="accederRutaRestringida('${token}')">Ir a la ruta restringida</a>
-          <p id="serverResponse"></p>
-        </div>
-        <script>
-          sessionStorage.setItem('token', '${token}');
-          let countdownInterval; // Variable para almacenar el intervalo del contador
-
-          function accederRutaRestringida(token) {
-            clearInterval(countdownInterval); // Detener el contador cuando se hace clic
-            const url = '/rutaRestringida?token=' + token;
-            window.open(url, '_blank'); // Abrir en una nueva pestaña con el token en la URL
-            // Ocultar información de expiración
-            document.getElementById('expirationInfo').style.display = 'none';
-            document.getElementById('serverResponse').innerHTML = '<p>Abriendo la ruta restringida...</p>';
-          }
-
-          // Función para iniciar el contador de expiración
-          function startCountdown() {
-            const countdownElement = document.getElementById('countdown');
-            let expiresInSec = ${expiresAt - Math.floor(Date.now() / 1000)};
-
-            countdownInterval = setInterval(() => {
-              countdownElement.textContent = expiresInSec;
-              expiresInSec--;
-
-              if (expiresInSec < 0) {
-                clearInterval(countdownInterval);
-                countdownElement.textContent = '0';
-                document.getElementById('expirationInfo').textContent = 'Token ha expirado.';
-              }
-            }, 1000);
-          }
-
-          startCountdown(); // Iniciar el contador de expiración al cargar la página
-        </script>
-      </body>
-      </html>
-    `);
+    res.render('autenticado', { 
+      email: agente.email,
+      token,
+      expiresAt,
+      expiresInSec // Pasar expiresInSec como parte de los datos renderizados
+    });
   } else {
-    // Si las credenciales son incorrectas, devolver error de autenticación
-    res.status(401).send("Error en la autenticación");
+    res.status(401).send('Error en la autenticación');
   }
 });
+
 
 // Ruta restringida
 app.get("/rutaRestringida", (req, res) => {
@@ -126,11 +62,11 @@ app.get("/rutaRestringida", (req, res) => {
     if (err) {
       return res.status(401).send("No autorizado. Token inválido o expirado.");
     }
-    // Ir a otra página o devolver algún contenido específico
-    res.send(`Bienvenido, ${decoded.email}`);
+    // Renderizar la plantilla Handlebars con el email decodificado
+    res.render('rutarestringida', { email: decoded.email });
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto  http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en el puerto http://localhost:${PORT}`);
 });
