@@ -6,7 +6,7 @@ const { create } = require("express-handlebars");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Datos de ejemplo de agentes
+
 const agentes = require("./data/agentes.js");
 
 const hbs = create({
